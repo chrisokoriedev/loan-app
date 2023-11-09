@@ -170,7 +170,7 @@ class _LoginscreenState extends State<Loginscreen> {
                       setState(() {
                         _isLoading = true; // Set loading state to true
                       });
-                      Future.delayed(Duration(seconds: 3), () {
+                      Future.delayed(const Duration(seconds: 3), () {
                         setState(() {
                           _isLoading =
                               false; // Set loading state back to false after 3 seconds
@@ -195,8 +195,8 @@ class _LoginscreenState extends State<Loginscreen> {
                     ),
                     child: Center(
                       child: _isLoading
-                          ? CircularProgressIndicator() // Show loading indicator when loading
-                          : Text(
+                          ? const CircularProgressIndicator(color: Colors.white54,) // Show loading indicator when loading
+                          : const Text(
                               'Get Login',
                               style:
                                   TextStyle(color: Colors.white, fontSize: 20),
