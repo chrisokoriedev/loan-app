@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app_challenge/Screens/login-screen.dart';
+import 'package:mobile_app_challenge/Screens/login_screen.dart';
 
 class First extends StatelessWidget {
   const First({super.key});

@@ -7,8 +7,10 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      body: Container(
-        child: Text("hello $username"),
+      body: SafeArea(
+        child: Container(
+          child: Text("hello $username"),
+        ),
       ),
     );
   }

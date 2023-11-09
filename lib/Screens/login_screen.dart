@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -19,8 +18,9 @@ class _LoginscreenState extends State<Loginscreen> {
   final _formKey = GlobalKey<FormState>();
 
   List<Users> usersList = [];
+  bool _isLoading = false; // Add a loading state variable
 
-  String? username = '';
+  String _username = '';
 
   @override
   void initState() {
@@ -112,7 +112,10 @@ class _LoginscreenState extends State<Loginscreen> {
                       if (!usersList.map((e) => e.email).contains(value)) {
                         return 'User not found';
                       }
-
+                      fetchUserAccess(); // Call fetchUserAccess here
+                      if (!_userExists()) {
+                        return 'User not found';
+                      }
                       return null;
                     },
                   ),
@@ -160,42 +163,44 @@ class _LoginscreenState extends State<Loginscreen> {
                 const SizedBox(
                   height: 100,
                 ),
+
                 GestureDetector(
                   onTap: () {
-                    // Navigate to the new page when the container is tapped
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Loginscreen()),
-                    );
-                  },
-                  child: GestureDetector(
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        usersList.map((e) => username = e.username);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
+                    if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        _isLoading = true; // Set loading state to true
+                      });
+                      Future.delayed(Duration(seconds: 3), () {
+                        setState(() {
+                          _isLoading =
+                              false; // Set loading state back to false after 3 seconds
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
                               builder: (context) => Home(
-                                    username: username!,
-                                  )),
-                        );
-                      }
-                    },
-                    // print(emailController.value.text) ;
-
-                    child: Container(
-                      height: 65,
-                      width: 370,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.blue,
-                      ),
-                      child: const Center(
-                          child: Text(
-                        'Get Login',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      )),
+                                username: _username,
+                              ),
+                            ),
+                          );
+                        });
+                      });
+                    }
+                  },
+                  child: Container(
+                    height: 65,
+                    width: 370,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.blue,
+                    ),
+                    child: Center(
+                      child: _isLoading
+                          ? CircularProgressIndicator() // Show loading indicator when loading
+                          : Text(
+                              'Get Login',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ),
                     ),
                   ),
                 ),
@@ -233,15 +238,31 @@ class _LoginscreenState extends State<Loginscreen> {
   }
 
   void fetchUserAccess() async {
-    const url = 'https://jsonplaceholder.typicode.com/users';
-    final uri = Uri.parse(url);
-    final response = await http.get(uri);
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      usersList = data
-          .map(
-              (user) => Users(email: user['email'], username: user['username']))
-          .toList();
+    try {
+      const url = 'https://jsonplaceholder.typicode.com/users';
+      final uri = Uri.parse(url);
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        usersList = data
+            .map((user) =>
+                Users(email: user['email'], username: user['username']))
+            .toList();
+        for (var user in usersList) {
+          if (user.email == emailController.text) {
+            setState(() {
+              _username = user.username;
+            });
+            break;
+          }
+        }
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
     }
+  }
+
+  bool _userExists() {
+    return usersList.any((user) => user.email == emailController.text);
   }
 }
