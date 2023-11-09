@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 class Home extends StatelessWidget {
-  const Home({super.key});
+  final String username;
+  const Home({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
       body: Container(
-        child: Text("hello"),
+        child: Text("hello $username"),
       ),
     );
   }

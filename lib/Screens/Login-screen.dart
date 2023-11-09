@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -18,6 +19,8 @@ class _LoginscreenState extends State<Loginscreen> {
   final _formKey = GlobalKey<FormState>();
 
   List<Users> usersList = [];
+
+  String? username = '';
 
   @override
   void initState() {
@@ -46,7 +49,7 @@ class _LoginscreenState extends State<Loginscreen> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: EdgeInsets.only(left: 20),
+            padding: const EdgeInsets.only(left: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -85,7 +88,7 @@ class _LoginscreenState extends State<Loginscreen> {
                       color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 2,
                       blurRadius: 5,
-                      offset: Offset(0, 3),
+                      offset: const Offset(0, 3),
                     ),
                   ]),
 
@@ -110,7 +113,6 @@ class _LoginscreenState extends State<Loginscreen> {
                         return 'User not found';
                       }
 
-                      // Add additional validation if needed
                       return null;
                     },
                   ),
@@ -155,7 +157,7 @@ class _LoginscreenState extends State<Loginscreen> {
                 ),
 
                 //Login and Create account button
-                SizedBox(
+                const SizedBox(
                   height: 100,
                 ),
                 GestureDetector(
@@ -163,16 +165,20 @@ class _LoginscreenState extends State<Loginscreen> {
                     // Navigate to the new page when the container is tapped
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Loginscreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const Loginscreen()),
                     );
                   },
                   child: GestureDetector(
                     onTap: () {
-                      print(usersList);
                       if (_formKey.currentState!.validate()) {
+                        usersList.map((e) => username = e.username);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Home()),
+                          MaterialPageRoute(
+                              builder: (context) => Home(
+                                    username: username!,
+                                  )),
                         );
                       }
                     },
@@ -209,7 +215,7 @@ class _LoginscreenState extends State<Loginscreen> {
                           color: Colors.grey.withOpacity(0.5),
                           spreadRadius: 5,
                           blurRadius: 7,
-                          offset: Offset(0, 3),
+                          offset: const Offset(0, 3),
                         )
                       ]),
                   child: const Center(
@@ -232,8 +238,10 @@ class _LoginscreenState extends State<Loginscreen> {
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-      usersList = data.map((user) => Users(email: user['email'], username : user['username'])).toList();
-
+      usersList = data
+          .map(
+              (user) => Users(email: user['email'], username: user['username']))
+          .toList();
     }
   }
 }
